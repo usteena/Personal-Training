@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import ReactTable from 'react-table-6';
 import  moment from 'moment';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import "react-table-6/react-table.css" 
+import Grid from '@material-ui/core/Grid';
 
-function Trainers(props) {
+function Trainers() {
     const [trainers, setTrainers] = useState([]);
   
 
@@ -14,11 +14,11 @@ function Trainers(props) {
 
       
     const columns = [
-        {headerName: 'Activity', field:'activity', sortable:true, filter:true},
-        {headerName: 'Date', field:'date',sortable:true, filter:true},
-        {headerName: 'Duration(min)', field:'duration', sortable:true, filter:true},
-        {headerName: 'Customer', field:() => {return customer.firstname + " "+customer.lastname}, sortable:true, filter:true}
-    ]
+            {id: "Date",Header: 'Date',accessor: d => { return moment(d.date).format('LLLL')}},
+            {Header: 'Duration (min)',accessor: 'duration'},
+            {Header: 'Activity',accessor: 'activity'},
+            {id: "FullName",Header: 'Customer',accessor: n => {return n.customer.firstname + " " + n.customer.lastname}}
+                    ]
     const getTrainers = () => {
         fetch('https://customerrest.herokuapp.com/gettrainings')
         .then(response => response.json())
@@ -28,11 +28,9 @@ function Trainers(props) {
 return(
     <div>
   
-        
-    <div className = "ag-theme-material" style={{height:'700px', width:'70%',margin:'auto'}}>
-        <AgGridReact columnDefs={columns} rowData={trainers}>
-        </AgGridReact>
-    </div>
+            <Grid container/>
+            <ReactTable columns={columns} data={trainers} filterable={true}/>
+    
     
     </div>
 )
