@@ -1,26 +1,30 @@
-import React, {useState, useEffect} from 'react';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import React, {useState, useEffect,useRef} from 'react';
+import ReactTable from 'react-table-6';
+import Button from '@material-ui/core/Button';
+import "react-table-6/react-table.css" 
 
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import Grid from '@material-ui/core/Grid';
 
 function Customer(props) {
     const [customer, setCustomer] = useState([]);
   
+    const gridRef = useRef();
+  
 
+    
     useEffect(()=>{
         getCustomer();
     },[])
 
-      
     const columns = [
-        {headerName: 'First name', field:'firstname', sortable:true, filter:true},
-        {headerName: 'Last name', field:'lastname', sortable:true, filter:true},
-        {headerName: 'Email', field:'email', sortable:true, filter:true},
-        {headerName: 'Phone', field:'phone', sortable:true, filter:true},
-        {headerName: 'Address', field:'streetaddress', sortable:true, filter:true},
-        {headerName: 'Postcode', field:'postcode', sortable:true, filter:true},
-        {headerName: 'City', field:'city', sortable:true, filter:true}
+        {Header: 'First name', accessor:'firstname'},
+        {Header: 'Last name', accessor:'lastname'},
+        {Header: 'Email', accessor:'email'},
+        {Header: 'Phone', accessor:'phone'},
+        {Header: 'Address', accessor:'streetaddress'},
+        {Header: 'Postcode', accessor:'postcode'},
+        {Header: 'City', accessor:'city'},
+        {Header: '', accessor:'links[0].href',filterable:false, sortable:false, Cell: ({params}) => <Button color="secondary" onClick={()=>deleteCustomer(params)}>Delete</Button>}
 
     ]
     const getCustomer = () => {
@@ -29,14 +33,20 @@ function Customer(props) {
         .then(data => setCustomer(data.content))
         .catch(err => console.error(err))
     }
+   
+    const deleteCustomer = (params) => {
+        if(window.confirm('Are you sure?')) {
+            fetch(params, {method: 'DELETE'})
+            .then(res => getCustomer())
+            .catch(err => console.error(err))
+        }
+    }
 return(
     <div>
   
         
-    <div className = "ag-theme-material" style={{height:'700px', width:'70%',margin:'auto'}}>
-        <AgGridReact columnDefs={columns} rowData={customer}>
-        </AgGridReact>
-    </div>
+            <Grid container/>
+            <ReactTable columns={columns} data={customer} filterable={true}/>
     
     </div>
 )
